@@ -10,6 +10,7 @@ import 'package:json_editor/src/analyzer/lexer/error_token.dart';
 import 'package:json_editor/src/analyzer/lexer/lexer.dart';
 import 'package:json_editor/src/analyzer/lexer/token.dart';
 import 'package:json_editor/src/json_editor_theme.dart';
+
 import 'highlight_theme/theme.dart';
 
 class RichTextEditingController extends TextEditingController {

@@ -3,26 +3,10 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:logger/logger.dart';
 
-Logger? _logger;
-
-void initialLogger({bool openDebug = true}) {
-  _logger = Logger(
-    level: openDebug
-        ? kReleaseMode
-            ? Level.error
-            : Level.debug
-        : Level.nothing,
-    printer: PrettyPrinter(
-        stackTraceBeginIndex: 1,
-        methodCount: 2,
-        errorMethodCount: 8,
-        lineLength: 120,
-        colors: true,
-        printEmojis: true,
-        printTime: true),
-  );
+bool _openDebug = false;
+void initialLogger({bool openDebug = false}) {
+  _openDebug = openDebug;
 }
 
 void debug({String? tag, Object? object, String? message}) {
@@ -30,8 +14,7 @@ void debug({String? tag, Object? object, String? message}) {
   if (object != null) {
     tagStr += '(${object.runtimeType.toString()})';
   }
-
-  _logger?.d('$tagStr: ${message ?? ''}');
+  _dPrint('$tagStr: ${message ?? ''}');
 }
 
 void warn({String? tag, Object? object, String? message}) {
@@ -39,7 +22,7 @@ void warn({String? tag, Object? object, String? message}) {
   if (object != null) {
     tagStr += '(${object.runtimeType.toString()})';
   }
-  _logger?.w('$tagStr: ${message ?? ''}');
+  _dPrint('$tagStr: ${message ?? ''}');
 }
 
 void info({String? tag, Object? object, String? message}) {
@@ -47,7 +30,7 @@ void info({String? tag, Object? object, String? message}) {
   if (object != null) {
     tagStr += '(${object.runtimeType.toString()})';
   }
-  _logger?.i('$tagStr: ${message ?? ''}');
+  _dPrint('$tagStr: ${message ?? ''}');
 }
 
 void error(
@@ -60,6 +43,13 @@ void error(
   if (object != null) {
     tagStr += '(${object.runtimeType.toString()})';
   }
+  _dPrint('$tagStr: ${message ?? ''}, $err,$trace');
+}
 
-  _logger?.e('$tagStr: ${message ?? ''}', err, trace);
+void _dPrint(Object e) {
+  if (_openDebug) {
+    if (kDebugMode) {
+      print(e);
+    }
+  }
 }

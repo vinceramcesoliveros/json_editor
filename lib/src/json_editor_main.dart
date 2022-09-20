@@ -15,63 +15,81 @@ import 'rich_text_field/rich_text_editing_controller.dart';
 import 'util/string_util.dart';
 
 class JsonEditor extends StatefulWidget {
-  JsonEditor._(
-      {Key? key,
-      this.jsonString,
-      this.jsonObj,
-      this.enabled = true,
-      this.openDebug = false,
-      this.onValueChanged})
-      : assert(jsonObj == null || jsonObj is Map || jsonObj is List),
+  JsonEditor._({
+    Key? key,
+    this.jsonString,
+    this.jsonObj,
+    this.enabled = true,
+    this.openDebug = false,
+    this.onValueChanged,
+    this.theme,
+    this.onError,
+  })  : assert(jsonObj == null || jsonObj is Map || jsonObj is List),
         super(key: key) {
     initialLogger(openDebug: openDebug);
   }
 
-  factory JsonEditor.string(
-          {Key? key,
-          String? jsonString,
-          bool enabled = true,
-          bool openDebug = false,
-          ValueChanged<JsonElement>? onValueChanged}) =>
+  factory JsonEditor.string({
+    Key? key,
+    String? jsonString,
+    bool enabled = true,
+    bool openDebug = false,
+    ValueChanged<JsonElement>? onValueChanged,
+    ThemeData? theme,
+    void Function(String error)? onError,
+  }) =>
       JsonEditor._(
-          key: key,
-          jsonString: jsonString,
-          enabled: enabled,
-          openDebug: openDebug,
-          onValueChanged: onValueChanged);
+        key: key,
+        jsonString: jsonString,
+        enabled: enabled,
+        openDebug: openDebug,
+        onValueChanged: onValueChanged,
+        onError: onError,
+      );
 
-  factory JsonEditor.object(
-          {Key? key,
-          Object? object,
-          bool enabled = true,
-          bool openDebug = false,
-          ValueChanged<JsonElement>? onValueChanged}) =>
+  factory JsonEditor.object({
+    Key? key,
+    Object? object,
+    bool enabled = true,
+    bool openDebug = false,
+    ValueChanged<JsonElement>? onValueChanged,
+    ThemeData? theme,
+    void Function(String error)? onError,
+  }) =>
       JsonEditor._(
         key: key,
         jsonObj: object,
         enabled: enabled,
         openDebug: openDebug,
         onValueChanged: onValueChanged,
+        theme: theme,
+        onError: onError,
       );
 
-  factory JsonEditor.element(
-          {Key? key,
-          JsonElement? element,
-          bool enabled = true,
-          bool openDebug = false,
-          ValueChanged<JsonElement>? onValueChanged}) =>
+  factory JsonEditor.element({
+    Key? key,
+    JsonElement? element,
+    bool enabled = true,
+    bool openDebug = false,
+    ValueChanged<JsonElement>? onValueChanged,
+    ThemeData? theme,
+    void Function(String error)? onError,
+  }) =>
       JsonEditor._(
         key: key,
         jsonString: element?.toString(),
         enabled: enabled,
         openDebug: openDebug,
         onValueChanged: onValueChanged,
+        onError: onError,
       );
 
   final String? jsonString;
   final Object? jsonObj;
   final bool enabled;
   final bool openDebug;
+  final ThemeData? theme;
+  final void Function(String error)? onError;
 
   /// Output the decoded json object.
   final ValueChanged<JsonElement>? onValueChanged;
@@ -167,6 +185,7 @@ class _JsonEditorState extends State<JsonEditor> {
         _undoRedo.set(_editController.text);
       } catch (e) {
         _errMessage = e.toString();
+        widget.onError?.call(e.toString());
         error(object: this, message: 'didUpdateWidget error', err: e);
       }
     }
@@ -175,71 +194,76 @@ class _JsonEditorState extends State<JsonEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
-      focusNode: _focus,
-      onKey: (keyEvent) {
-        // debug(object: this, message: 'Key event: ${keyEvent.toString()}');
-        if (keyEvent is RawKeyDownEvent) {
-          _currentKeyEvent = keyEvent;
-          if (keyEvent.isControlPressed &&
-              keyEvent.logicalKey == LogicalKeyboardKey.keyZ) {
-            if (keyEvent.isShiftPressed) {
-              //Redo
+    return Theme(
+      data: widget.theme ?? Theme.of(context),
+      child: RawKeyboardListener(
+        focusNode: _focus,
+        onKey: (keyEvent) {
+          // debug(object: this, message: 'Key event: ${keyEvent.toString()}');
+          if (keyEvent is RawKeyDownEvent) {
+            _currentKeyEvent = keyEvent;
+            if (keyEvent.isControlPressed &&
+                keyEvent.logicalKey == LogicalKeyboardKey.keyZ) {
+              if (keyEvent.isShiftPressed) {
+                //Redo
 
-              var s = _undoRedo.redo();
-              debug(tag: 'UndoRedo', message: 'Redo=>\n$s');
-              if (s != null) {
-                _editController.text = s;
-              }
-            } else {
-              //Undo
+                var s = _undoRedo.redo();
+                debug(tag: 'UndoRedo', message: 'Redo=>\n$s');
+                if (s != null) {
+                  _editController.text = s;
+                }
+              } else {
+                //Undo
 
-              var s = _undoRedo.undo();
-              debug(tag: 'UndoRedo', message: 'Undo=>\n$s');
-              if (s != null) {
-                _editController.text = s;
+                var s = _undoRedo.undo();
+                debug(tag: 'UndoRedo', message: 'Undo=>\n$s');
+                if (s != null) {
+                  _editController.text = s;
+                }
               }
             }
           }
-        }
-      },
-      child: TextField(
-        readOnly: !widget.enabled,
-        focusNode: _editFocus,
-        controller: _editController,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            isDense: true,
-            errorText: _errMessage,
-            errorMaxLines: 10),
-        keyboardType: TextInputType.multiline,
-        expands: true,
-        maxLines: null,
-        minLines: null,
-        onChanged: (s) {
-          if (_currentKeyEvent?.logicalKey == LogicalKeyboardKey.enter) {
-            // Enter key
-            var editingOffset = _editController.selection.baseOffset;
-            if (editingOffset == 0) {
-              return;
-            }
-            _enterFormat();
-          } else if (_currentKeyEvent?.logicalKey ==
-                  LogicalKeyboardKey.braceLeft ||
-              _currentKeyEvent?.logicalKey == LogicalKeyboardKey.braceRight) {
-            _closingFormat(open: '{', close: '}');
-          } else if (_currentKeyEvent?.logicalKey ==
-                  LogicalKeyboardKey.bracketLeft ||
-              _currentKeyEvent?.logicalKey == LogicalKeyboardKey.bracketRight) {
-            _closingFormat(open: '[', close: ']');
-          } else if (_currentKeyEvent?.logicalKey == LogicalKeyboardKey.quote) {
-            _closingFormat(open: '"', close: '"');
-          }
-          _lastInput = DateTime.now();
-          //Analyze json syntax
-          _analyze();
-          _undoRedoInput(s);
         },
+        child: TextField(
+          readOnly: !widget.enabled,
+          focusNode: _editFocus,
+          controller: _editController,
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              errorText: widget.onError != null ? null : _errMessage,
+              errorMaxLines: 10),
+          keyboardType: TextInputType.multiline,
+          expands: true,
+          maxLines: null,
+          minLines: null,
+          onChanged: (s) {
+            if (_currentKeyEvent?.logicalKey == LogicalKeyboardKey.enter) {
+              // Enter key
+              var editingOffset = _editController.selection.baseOffset;
+              if (editingOffset == 0) {
+                return;
+              }
+              _enterFormat();
+            } else if (_currentKeyEvent?.logicalKey ==
+                    LogicalKeyboardKey.braceLeft ||
+                _currentKeyEvent?.logicalKey == LogicalKeyboardKey.braceRight) {
+              _closingFormat(open: '{', close: '}');
+            } else if (_currentKeyEvent?.logicalKey ==
+                    LogicalKeyboardKey.bracketLeft ||
+                _currentKeyEvent?.logicalKey ==
+                    LogicalKeyboardKey.bracketRight) {
+              _closingFormat(open: '[', close: ']');
+            } else if (_currentKeyEvent?.logicalKey ==
+                LogicalKeyboardKey.quote) {
+              _closingFormat(open: '"', close: '"');
+            }
+            _lastInput = DateTime.now();
+            //Analyze json syntax
+            _analyze();
+            _undoRedoInput(s);
+          },
+        ),
       ),
     );
   }
@@ -318,6 +342,7 @@ class _JsonEditorState extends State<JsonEditor> {
   bool _analyzeSync() {
     var hasError = false;
     var text = _editController.text;
+    String _error = '';
     if (text.isNotEmpty) {
       var err = _analyzer.analyze(text);
       _editController.analyzeError = err;
@@ -334,15 +359,20 @@ class _JsonEditorState extends State<JsonEditor> {
             error(object: this, message: 'analyze error', err: e);
             setState(() {
               _errMessage = e.toString();
+              _error = e.toString();
             });
           }
         } else {
           setState(() {
             error(object: this, message: 'analyze error', err: err);
             _errMessage = err.toString();
+            _error = err.toString();
           });
         }
       }
+    }
+    if (_error.isNotEmpty) {
+      widget.onError?.call(_error.toString());
     }
     return hasError;
   }

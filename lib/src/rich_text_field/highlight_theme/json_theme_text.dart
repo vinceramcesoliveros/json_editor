@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'highlight_config.dart';
 import 'theme.dart';
 
-class JsonTheme implements HighlightTheme {
-  JsonTheme({
+class JsonThemeText implements HighlightTheme {
+  JsonThemeText({
     TextStyle? defaultStyle,
     TextStyle? bracketStyle,
     TextStyle? numberStyle,
@@ -39,7 +39,7 @@ class JsonTheme implements HighlightTheme {
                 fontStyle: FontStyle.italic,
                 decoration: TextDecoration.underline);
 
-  factory JsonTheme.light() => JsonTheme(
+  factory JsonThemeText.light() => JsonThemeText(
       defaultStyle: TextStyle(color: Colors.blueGrey.shade900, fontSize: 14),
       bracketStyle: TextStyle(color: Colors.blueGrey.shade900, fontSize: 14),
       numberStyle: TextStyle(color: Colors.blue.shade500, fontSize: 14),
@@ -54,9 +54,9 @@ class JsonTheme implements HighlightTheme {
           fontStyle: FontStyle.italic,
           decoration: TextDecoration.underline));
 
-  factory JsonTheme.dark() => JsonTheme(
-      defaultStyle: TextStyle(color: Colors.white, fontSize: 14),
-      bracketStyle: TextStyle(color: Colors.white70, fontSize: 14),
+  factory JsonThemeText.dark() => JsonThemeText(
+      defaultStyle: const TextStyle(color: Colors.white, fontSize: 14),
+      bracketStyle: const TextStyle(color: Colors.white70, fontSize: 14),
       numberStyle: TextStyle(color: Colors.blue.shade500, fontSize: 14),
       stringStyle: TextStyle(color: Colors.green.shade800, fontSize: 14),
       boolStyle: TextStyle(color: Colors.orange.shade800, fontSize: 14),
@@ -113,7 +113,7 @@ class JsonTheme implements HighlightTheme {
   @override
   Map<String, TextStyle> get keywordsStyle => {};
 
-  JsonTheme copyWith({
+  JsonThemeText copyWith({
     TextStyle? defaultStyle,
     TextStyle? bracketStyle,
     TextStyle? numberStyle,
@@ -123,7 +123,7 @@ class JsonTheme implements HighlightTheme {
     TextStyle? commentStyle,
     TextStyle? errorStyle,
   }) =>
-      JsonTheme(
+      JsonThemeText(
           defaultStyle: defaultStyle ?? this.defaultStyle,
           bracketStyle: bracketStyle ?? this.bracketStyle,
           numberStyle: numberStyle ?? this.numberStyle,

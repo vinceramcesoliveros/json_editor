@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'rich_text_field/highlight_theme/json_theme.dart';
+import 'rich_text_field/highlight_theme/json_theme_text.dart';
 
 class JsonEditorTheme extends InheritedWidget {
   const JsonEditorTheme(
@@ -23,12 +23,14 @@ class JsonEditorThemeData {
   JsonEditorThemeData({required this.lightTheme, this.darkTheme});
 
   factory JsonEditorThemeData.defaultTheme() => JsonEditorThemeData(
-      lightTheme: JsonTheme.light(), darkTheme: JsonTheme.dark());
+        lightTheme: JsonThemeText.light(),
+        darkTheme: JsonThemeText.dark(),
+      );
 
-  final JsonTheme lightTheme;
-  final JsonTheme? darkTheme;
+  final JsonThemeText lightTheme;
+  final JsonThemeText? darkTheme;
 
-  JsonTheme theme(BuildContext context) {
+  JsonThemeText theme(BuildContext context) {
     if (Theme.of(context).brightness == Brightness.dark) {
       return darkTheme ?? lightTheme;
     } else {

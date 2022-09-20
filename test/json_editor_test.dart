@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_editor/src/analyzer/analyzer.dart';
 import 'package:json_editor/src/analyzer/lexer/lexer.dart';
-import 'package:json_editor/src/analyzer/lexer/token.dart';
 
 void main() {
   group('Lexer', () {
@@ -21,13 +20,6 @@ void main() {
           '{//注释信息\n"name": "you", //注释\n"age": 23, "child": true, "obj": { "serialNo": [ 1, 2, 3]}}');
       var advanceToken = tokens;
       while (!advanceToken.isEof) {
-        if (advanceToken.precedingComments != null) {
-          print(
-              '${advanceToken.lexeme} with comments: ${advanceToken.precedingComments!.toString()}');
-        } else {
-          print(advanceToken.lexeme);
-        }
-
         advanceToken = advanceToken.next!;
       }
       advanceToken = advanceToken.next!;
