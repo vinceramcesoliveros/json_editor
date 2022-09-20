@@ -227,6 +227,8 @@ class _JsonEditorState extends State<JsonEditor> {
       },
       child: TextField(
         readOnly: !widget.enabled,
+        textAlign: TextAlign.start,
+        textAlignVertical: TextAlignVertical.top,
         focusNode: _editFocus,
         controller: _editController,
         decoration: widget.inputDecoration ??
