@@ -23,6 +23,7 @@ class JsonEditor extends StatefulWidget {
     this.openDebug = false,
     this.onValueChanged,
     this.onError,
+    this.inputDecoration,
   })  : assert(jsonObj == null || jsonObj is Map || jsonObj is List),
         super(key: key) {
     initialLogger(openDebug: openDebug);
@@ -35,6 +36,7 @@ class JsonEditor extends StatefulWidget {
     bool openDebug = false,
     ValueChanged<JsonElement>? onValueChanged,
     void Function(String error)? onError,
+    InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
         key: key,
@@ -43,6 +45,7 @@ class JsonEditor extends StatefulWidget {
         openDebug: openDebug,
         onValueChanged: onValueChanged,
         onError: onError,
+        inputDecoration: inputDecoration,
       );
 
   factory JsonEditor.object({
@@ -52,6 +55,7 @@ class JsonEditor extends StatefulWidget {
     bool openDebug = false,
     ValueChanged<JsonElement>? onValueChanged,
     void Function(String error)? onError,
+    InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
         key: key,
@@ -60,6 +64,7 @@ class JsonEditor extends StatefulWidget {
         openDebug: openDebug,
         onValueChanged: onValueChanged,
         onError: onError,
+        inputDecoration: inputDecoration,
       );
 
   factory JsonEditor.element({
@@ -70,6 +75,7 @@ class JsonEditor extends StatefulWidget {
     ValueChanged<JsonElement>? onValueChanged,
     ThemeData? theme,
     void Function(String error)? onError,
+    InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
         key: key,
@@ -78,6 +84,7 @@ class JsonEditor extends StatefulWidget {
         openDebug: openDebug,
         onValueChanged: onValueChanged,
         onError: onError,
+        inputDecoration: inputDecoration,
       );
 
   final String? jsonString;
@@ -85,6 +92,7 @@ class JsonEditor extends StatefulWidget {
   final bool enabled;
   final bool openDebug;
   final void Function(String error)? onError;
+  final InputDecoration? inputDecoration;
 
   /// Output the decoded json object.
   final ValueChanged<JsonElement>? onValueChanged;
@@ -221,12 +229,13 @@ class _JsonEditorState extends State<JsonEditor> {
         readOnly: !widget.enabled,
         focusNode: _editFocus,
         controller: _editController,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          isDense: true,
-          errorText: widget.onError != null ? null : _errMessage,
-          errorMaxLines: 10,
-        ),
+        decoration: widget.inputDecoration ??
+            InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              errorText: widget.onError != null ? null : _errMessage,
+              errorMaxLines: 10,
+            ),
         keyboardType: TextInputType.multiline,
         expands: true,
         maxLines: null,
