@@ -58,7 +58,7 @@ class JsonThemeText implements HighlightTheme {
       defaultStyle: const TextStyle(color: Colors.white, fontSize: 14),
       bracketStyle: const TextStyle(color: Colors.white70, fontSize: 14),
       numberStyle: TextStyle(color: Colors.blue.shade500, fontSize: 14),
-      stringStyle: TextStyle(color: Colors.green.shade800, fontSize: 14),
+      stringStyle: const TextStyle(color: Colors.white, fontSize: 14),
       boolStyle: TextStyle(color: Colors.orange.shade800, fontSize: 14),
       keyStyle: TextStyle(color: Colors.blueGrey.shade200, fontSize: 14),
       commentStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
