@@ -450,8 +450,14 @@ abstract class Scanner {
               identical(next, $CR) ||
               identical(next, $EOF))) {
         if (!asciiOnly) handleUnicode(start);
-        unterminatedString(quoteChar, quoteStart, start,
-            asciiOnly: asciiOnly, isMultiLine: false, isRaw: false);
+        unterminatedString(
+          quoteChar,
+          quoteStart,
+          start,
+          asciiOnly: asciiOnly,
+          isMultiLine: false,
+          isRaw: false,
+        );
         return next;
       }
       if (next > 127) asciiOnly = false;

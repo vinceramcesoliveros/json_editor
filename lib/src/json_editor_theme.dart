@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'rich_text_field/highlight_theme/json_theme_text.dart';
 
 class JsonEditorTheme extends InheritedWidget {
-  const JsonEditorTheme(
-      {Key? key, required this.themeData, required Widget child})
-      : super(key: key, child: child);
+  const JsonEditorTheme({
+    Key? key,
+    required this.themeData,
+    required Widget child,
+  }) : super(key: key, child: child);
 
   final JsonEditorThemeData themeData;
   @override
