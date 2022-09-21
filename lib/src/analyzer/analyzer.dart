@@ -5,6 +5,7 @@
 import 'package:json_editor/src/analyzer/lexer/error_token.dart';
 import 'package:json_editor/src/analyzer/lexer/lexer.dart';
 import 'package:json_editor/src/util/logger.dart';
+
 import 'error.dart';
 import 'lexer/token.dart';
 
@@ -126,7 +127,8 @@ class JsonAnalyzer {
           character: token.lexeme,
           charOffset: token.charOffset,
           line: token.line,
-          message: "Json value should be a String, Number, Bool, Array or Map");
+          message:
+              "Json value should be a String, Number, Bool, Array or Object");
     }
   }
 
