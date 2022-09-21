@@ -35,7 +35,7 @@ class JsonEditor extends StatefulWidget {
     bool enabled = true,
     bool openDebug = false,
     ValueChanged<JsonElement>? onValueChanged,
-    void Function(String error)? onError,
+    void Function(String error, String json)? onError,
     InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
@@ -54,7 +54,7 @@ class JsonEditor extends StatefulWidget {
     bool enabled = true,
     bool openDebug = false,
     ValueChanged<JsonElement>? onValueChanged,
-    void Function(String error)? onError,
+    void Function(String error, String json)? onError,
     InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
@@ -74,7 +74,7 @@ class JsonEditor extends StatefulWidget {
     bool openDebug = false,
     ValueChanged<JsonElement>? onValueChanged,
     ThemeData? theme,
-    void Function(String error)? onError,
+    void Function(String error, String json)? onError,
     InputDecoration? inputDecoration,
   }) =>
       JsonEditor._(
@@ -91,7 +91,7 @@ class JsonEditor extends StatefulWidget {
   final Object? jsonObj;
   final bool enabled;
   final bool openDebug;
-  final void Function(String error)? onError;
+  final void Function(String error, String json)? onError;
   final InputDecoration? inputDecoration;
 
   /// Output the decoded json object.
@@ -188,7 +188,7 @@ class _JsonEditorState extends State<JsonEditor> {
         _undoRedo.set(_editController.text);
       } catch (e) {
         _errMessage = e.toString();
-        widget.onError?.call(e.toString());
+        widget.onError?.call(e.toString(), _editController.text);
         error(object: this, message: 'didUpdateWidget error', err: e);
       }
     }
@@ -374,7 +374,7 @@ class _JsonEditorState extends State<JsonEditor> {
       }
     }
     if (_error.isNotEmpty) {
-      widget.onError?.call(_error.toString());
+      widget.onError?.call(_error.toString(), _editController.text);
     }
     return hasError;
   }
